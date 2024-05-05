@@ -1,0 +1,7 @@
+services:
+  bot:
+    build: ./bot
+    container_name: rtl_bot
+    restart: always
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
