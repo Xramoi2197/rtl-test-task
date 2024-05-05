@@ -6,6 +6,8 @@ from aiogram.filters import Command
 from aiogram.types import Message
 
 from filters import QueryFilter
+from db.query import SampleQuery
+from db.exceptions import UnknownGroupType
 
 router = Router()
 
@@ -18,14 +20,15 @@ async def cmd_start(message: Message):
 
 
 @router.message(QueryFilter())
-async def query(message: Message):
+async def query(message: Message, query: SampleQuery):
     try:
         data = json.loads(message.text)
         start_date = dt.datetime.fromisoformat(data["dt_from"])
         end_date = dt.datetime.fromisoformat(data["dt_upto"])
         group_type = data["group_type"]
-        await message.answer("DONE {start_date} {end_date} {group_type}")
-    except Exception as e:
+        result = await query.get_dataset(start_date, end_date, group_type)
+        await message.answer(json.dumps(result))
+    except UnknownGroupType:
         await message.answer(
             """
             Допустимо отправлять только следующие запросы:
@@ -34,7 +37,8 @@ async def query(message: Message):
             {"dt_from": "2022-02-01T00:00:00", "dt_upto": "2022-02-02T00:00:00", "group_type": "hour"}
             """
         )
-        return
+    except Exception as e:
+        await message.answer("Что-то пошло не так!")
 
 
 @router.message()

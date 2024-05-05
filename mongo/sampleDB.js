@@ -2,8 +2,12 @@
 const fs = require('fs');
 const path = require('path');
 
+const username = process.env.MONGO_INITDB_ROOT_USERNAME;
+const password = process.env.MONGO_INITDB_ROOT_PASSWORD;
+const uri = `mongodb://${username}:${password}@localhost:27017/`;
+print(uri)
 // Установка соединения с MongoDB
-const conn = new Mongo();
+const conn = new Mongo(uri);
 const db = conn.getDB("sampleDB");
 
 // Путь к дампу
