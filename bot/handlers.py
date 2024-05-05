@@ -9,6 +9,8 @@ from filters import QueryFilter
 from db.query import SampleQuery
 from db.exceptions import UnknownGroupType
 
+import logging
+
 router = Router()
 
 
@@ -30,14 +32,10 @@ async def query(message: Message, query: SampleQuery):
         await message.answer(json.dumps(result))
     except UnknownGroupType:
         await message.answer(
-            """
-            Допустимо отправлять только следующие запросы:
-            {"dt_from": "2022-09-01T00:00:00", "dt_upto": "2022-12-31T23:59:00", "group_type": "month"}
-            {"dt_from": "2022-10-01T00:00:00", "dt_upto": "2022-11-30T23:59:00", "group_type": "day"}
-            {"dt_from": "2022-02-01T00:00:00", "dt_upto": "2022-02-02T00:00:00", "group_type": "hour"}
-            """
+            'group_type может быть только следующий: "month", "day", "hour"'
         )
     except Exception as e:
+        logging.exception(e)
         await message.answer("Что-то пошло не так!")
 
 
